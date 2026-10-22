@@ -17,7 +17,7 @@ struct ProjectDetailScreen: View {
     ]
     
     var body: some View {
-        Group {
+        Group<some View> {
             if let project {
                 DetailContent(project: project, stages: stages, executingStage: $executingStage, errorMessage: $errorMessage)
             } else {
@@ -68,7 +68,8 @@ struct DetailContent: View {
     }
     
     private func runStage(_ key: String) async {
-        guard let id = project.id else { return }
+        guard let p = project else { return }
+        let id = p.id
         executingStage = key; errorMessage = nil
         defer { executingStage = nil }
         do {
