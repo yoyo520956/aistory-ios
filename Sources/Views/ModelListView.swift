@@ -274,8 +274,7 @@ struct ModelCreateView: View {
             is_active: isActive,
             priority: 0,
             rate_limit_rpm: 60,
-            rate_limit_rpd: 1000,
-            extra_config: nil
+            rate_limit_rpd: 1000
         )
         
         do {
