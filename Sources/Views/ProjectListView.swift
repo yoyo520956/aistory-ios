@@ -12,10 +12,10 @@ struct ProjectListView: View {
                     EmptyState(
                         icon: "film",
                         title: "暂无项目",
-                        subtitle: "创建你的第一个 AI 漫剧项目"
-                    ) {
-                        showingCreate = true
-                    }
+                        subtitle: "创建你的第一个 AI 漫剧项目",
+                        actionTitle: "新建项目",
+                        onAction: { showingCreate = true }
+                    )
                 } else {
                     List {
                         ForEach(projectStore.projects) { project in
@@ -193,7 +193,7 @@ struct StatusBadge: View {
 struct StatItem: View {
     let icon: String
     let value: String
-    let color: Color? = nil
+    var color: Color? = nil
     
     var body: some View {
         HStack(spacing: 4) {
@@ -211,8 +211,8 @@ struct EmptyState: View {
     let icon: String
     let title: String
     let subtitle: String
-    var actionTitle: String?
-    var onAction: (() -> Void)?
+    var actionTitle: String? = nil
+    var onAction: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 16) {

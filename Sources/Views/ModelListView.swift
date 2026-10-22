@@ -13,10 +13,10 @@ struct ModelListView: View {
                     EmptyState(
                         icon: "cpu",
                         title: "暂无模型",
-                        subtitle: "添加你的第一个 AI 模型"
-                    ) {
-                        showingCreate = true
-                    }
+                        subtitle: "添加你的第一个 AI 模型",
+                        actionTitle: "添加模型",
+                        onAction: { showingCreate = true }
+                    )
                 } else {
                     List {
                         ForEach(filteredProviders, id: \.id) { provider in

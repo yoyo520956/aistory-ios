@@ -81,7 +81,7 @@ struct Project: Codable, Identifiable, Equatable, Hashable {
     var promptSetId: UUID?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, description, status, series, screenplay
+        case id, name, description, status
         case displayName = "display_name"
         case originalTopic = "original_topic"
         case statusDisplay = "status_display"
@@ -92,9 +92,11 @@ struct Project: Codable, Identifiable, Equatable, Hashable {
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case completedAt = "completed_at"
+        case seriesId = "series"
         case seriesName = "series_name"
         case episodeTitle = "episode_title"
         case episodeNumber = "episode_number"
+        case screenplayId = "screenplay"
         case jianyingDraftPath = "jianying_draft_path"
         case promptSetId = "prompt_template_set"
     }
@@ -121,11 +123,11 @@ extension Project {
         createdAt = (try? c.decode(String.self, forKey: .createdAt)) ?? ""
         updatedAt = (try? c.decode(String.self, forKey: .updatedAt)) ?? ""
         completedAt = try? c.decodeIfPresent(String.self, forKey: .completedAt)
-        seriesId = try? c.decodeIfPresent(UUID.self, forKey: .series)
+        seriesId = try? c.decodeIfPresent(UUID.self, forKey: .seriesId)
         seriesName = try? c.decodeIfPresent(String.self, forKey: .seriesName)
         episodeTitle = try? c.decodeIfPresent(String.self, forKey: .episodeTitle)
         episodeNumber = try? c.decodeIfPresent(Int.self, forKey: .episodeNumber)
-        screenplayId = try? c.decodeIfPresent(UUID.self, forKey: .screenplay)
+        screenplayId = try? c.decodeIfPresent(UUID.self, forKey: .screenplayId)
         jianyingDraftPath = try? c.decodeIfPresent(String.self, forKey: .jianyingDraftPath)
         promptSetId = try? c.decodeIfPresent(UUID.self, forKey: .promptSetId)
     }
