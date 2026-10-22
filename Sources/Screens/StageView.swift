@@ -5,7 +5,7 @@ import AVKit
 
 struct StageView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(AppState.self) private var appState
+    @EnvironmentObject var appState: AppState
     @State private var stageData: ProjectStage?
     @State private var storyboards: [StoryboardItem] = []
     @State private var images: [GeneratedImage] = []

@@ -4,7 +4,7 @@ import SwiftUI
 
 struct NewProjectScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(AppState.self) private var appState
+    @EnvironmentObject var appState: AppState
     @State private var name = ""
     @State private var topic = ""
     @State private var isCreating = false

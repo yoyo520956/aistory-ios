@@ -7,32 +7,26 @@ struct AIStoryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(appState)
-                .onAppear {
-                    appState.loadServerConfig()
-                }
+                .environmentObject(appState)
+                .onAppear { appState.loadServerConfig() }
         }
     }
 }
 
 struct ContentView: View {
-    @Environment(AppState.self) private var appState
-    @State private var selectedTab = 0
+    @EnvironmentObject var appState: AppState
+    @State private var tab = 0
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $tab) {
             HomeScreen()
-                .tabItem {
-                    Label("首页", systemImage: "film.fill")
-                }
+                .tabItem { Label("项目", systemImage: "film") }
                 .tag(0)
-            
             SettingsScreen()
-                .tabItem {
-                    Label("设置", systemImage: "gearshape.fill")
-                }
+                .tabItem { Label("设置", systemImage: "gearshape") }
                 .tag(1)
         }
         .tint(Color.aiPrimary)
+        .preferredColorScheme(.dark)
     }
 }

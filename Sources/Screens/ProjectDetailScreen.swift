@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProjectDetailScreen: View {
-    @Environment(AppState.self) private var appState
+    @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     @State private var executingStage: String?
     @State private var errorMessage: String?

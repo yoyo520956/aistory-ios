@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Home Screen
 
 struct HomeScreen: View {
-    @Environment(AppState.self) private var appState
+    @EnvironmentObject var appState: AppState
     @State private var showNewProject = false
     @State private var errorMessage: String?
     @State private var isRefreshing = false

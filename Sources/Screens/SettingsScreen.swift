@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Settings Screen
 
 struct SettingsScreen: View {
-    @Environment(AppState.self) private var appState
+    @EnvironmentObject var appState: AppState
     @State private var baseUrl = ""
     @State private var username = ""
     @State private var password = ""

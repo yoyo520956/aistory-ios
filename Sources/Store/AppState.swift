@@ -1,13 +1,14 @@
 import SwiftUI
-import Observation
+import Combine
 
-@Observable
-class AppState {
-    var serverConfig = ServerConfig()
-    var projects: [Project] = []
-    var isLoading = false
-    var selectedProject: Project?
-    var lastError: String?
+// MARK: - App State (iOS 16 compatible: ObservableObject)
+
+class AppState: ObservableObject {
+    @Published var serverConfig = ServerConfig()
+    @Published var projects: [Project] = []
+    @Published var isLoading = false
+    @Published var selectedProject: Project?
+    @Published var lastError: String?
     
     private let configKey = "ai_story_server_config"
     private let encoder = JSONEncoder()

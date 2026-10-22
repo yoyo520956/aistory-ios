@@ -38,8 +38,8 @@ class APIClient {
         var h = ["Content-Type": "application/json", "Accept": "application/json"]
         if !config.token.isEmpty { h["Authorization"] = "Bearer \(config.token)" }
         else if !config.username.isEmpty, !config.password.isEmpty {
-            let creds = "\(config.username):\(config.password)"
-            h["Authorization"] = "Basic \(creds.base64EncodedString())"
+            let credsData = "\(config.username):\(config.password)".data(using: .utf8) ?? Data()
+            h["Authorization"] = "Basic \(credsData.base64EncodedString())"
         }
         return h
     }
