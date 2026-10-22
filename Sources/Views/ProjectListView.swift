@@ -173,7 +173,7 @@ struct StatusBadge: View {
         case "completed": return Color.aiSuccess
         case "processing", "queued": return Color.aiWarning
         case "failed": return Color.aiError
-        case "paused": return Color.aiWarn
+        case "paused": return Color.aiWarning
         default: return Color.aiText2
         }
     }

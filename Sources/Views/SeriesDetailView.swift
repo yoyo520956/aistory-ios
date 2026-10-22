@@ -61,7 +61,7 @@ struct SeriesDetailView: View {
                 .sheet(isPresented: $showingCreate) {
                     CreateEpisodeView(seriesId: seriesId)
                 }
-                .onAppear { loadSeries() }
+                .task { await loadSeries() }
                 .alert("错误", isPresented: $showError) {
                     Button("确定") {}
                 } message: {

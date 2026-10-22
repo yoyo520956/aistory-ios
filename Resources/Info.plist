@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>AIStory</string>
+	<string>AI Story</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>20261023.01</string>
+	<string>20261023.02</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.qingyao.aistory</string>
 	<key>UILaunchScreen</key>
