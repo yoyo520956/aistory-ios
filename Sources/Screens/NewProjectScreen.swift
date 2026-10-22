@@ -49,7 +49,7 @@ struct NewProjectScreen: View {
                             Spacer()
                             Text("可选")
                                 .font(.caption)
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(.secondary)
                         }
                         TextEditor(text: $topic)
                             .font(.body)
@@ -64,7 +64,7 @@ struct NewProjectScreen: View {
                             )
                         Text("支持输入小说原文或故事主题描述")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(.secondary)
                             .padding(.top, 4)
                     }
                     .padding(.horizontal, 20)

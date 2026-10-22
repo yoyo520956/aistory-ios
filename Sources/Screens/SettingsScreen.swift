@@ -27,7 +27,7 @@ struct SettingsScreen: View {
                             .foregroundStyle(.primary)
                         Text("com.qingyao.aistory v1.0")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(.secondary)
                     }
                     .padding(.top, 20)
                     
@@ -60,7 +60,7 @@ struct SettingsScreen: View {
                         
                         Text("提示：若后端使用 Token 认证，将 Token 填入密码框即可。")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(.secondary)
                             .padding(.leading, 4)
                     }
                     .padding(16)
