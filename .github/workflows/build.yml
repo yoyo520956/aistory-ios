@@ -1,0 +1,84 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Build and Archive
+        run: |
+          VERSION=$(grep MARKETING_VERSION project.yml | awk '{print $2}' | tr -d '"')
+          BUILD=$(grep CURRENT_PROJECT_VERSION project.yml | awk '{print $2}' | tr -d '"')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "BUILD=$BUILD" >> $GITHUB_ENV
+          xcodebuild archive \
+            -project AIStory.xcodeproj \
+            -scheme AIStory \
+            -configuration Release \
+            -archivePath build/AIStory.xcarchive \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            ONLY_ACTIVE_ARCH=NO \
+            2>&1 | tee build.log
+          echo "=== Checking archive ==="
+          ls -la build/AIStory.xcarchive/Products/Applications/ 2>/dev/null || echo "no archive products"
+          APP_PATH=$(find build/AIStory.xcarchive -name "*.app" 2>/dev/null | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app found in xcarchive"
+            cat build.log | grep -E "error:|warning:" | head -20
+            exit 1
+          fi
+          echo "App found: $APP_PATH"
+          echo "=== Creating IPA via Payload zip ==="
+          rm -rf Payload build/ipa
+          mkdir -p build/ipa
+          cp -R "$APP_PATH" Payload/
+          cd Payload
+          zip -qry ../ipa/AIStory-unsigned.ipa *
+          cd ..
+          rm -rf Payload
+          ls -la build/ipa/
+          echo "=== IPA created ==="
+          mv build/ipa/AIStory-unsigned.ipa AIStory-unsigned.ipa
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIStory-unsigned
+          path: AIStory-unsigned.ipa
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.0
+          files: AIStory-unsigned.ipa
+          name: "AIStory v1.0.0"
+          body: |
+            ## AIStory iOS v1.0.0
+            
+            连接 AI Story 后端的 iOS 客户端。
+            
+            ### 功能
+            - 📖 项目列表 / 创建 / 详情
+            - 🎬 阶段执行（文案改写→分镜→图片→运镜→视频）
+            - 🖼 素材预览
+            - ⚙️ 服务器配置
+            
+            ### 安装
+            1. Feather 签名安装
+            2. 设置 → 填入服务器地址和认证信息
+            3. 测试连接 → 开始创作
+            
+            ### 服务端要求
+            需运行 [ai_story](https://github.com/xhongc/ai_story) Django 后端
