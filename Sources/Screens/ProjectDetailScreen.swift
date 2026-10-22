@@ -17,41 +17,50 @@ struct ProjectDetailScreen: View {
     ]
     
     var body: some View {
-        Group<some View> {
-            if let project {
-                DetailContent(project: project, stages: stages, executingStage: $executingStage, errorMessage: $errorMessage)
-            } else {
-                EmptyState(icon: "exclamationmark.triangle", title: "项目不存在", subtitle: "")
-            }
+        if let project {
+            DetailContent(project: project, stages: stages)
+                .navigationTitle(project.displayName.isEmpty ? project.name : project.displayName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("完成") { dismiss() }
+                    }
+                }
+                .alert("执行失败", isPresented: .constant(errorMessage != nil)) {
+                    Button("重试") { if let s = executingStage { Task { await doRunStage(s) } } }
+                    Button("取消", role: .cancel) { errorMessage = nil }
+                } message: { Text(errorMessage ?? "") }
+                .task { await appState.refreshProject(project.id) }
+        } else {
+            EmptyState(
+                icon: "exclamationmark.triangle",
+                title: "项目不存在",
+                subtitle: "",
+                actionTitle: nil,
+                onAction: nil
+            )
         }
-        .navigationTitle(project?.displayName ?? "项目详情")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar { ToolbarItem(placement: .navigationBarTrailing) { Button("完成") { dismiss() } } }
-        .alert("执行失败", isPresented: .constant(errorMessage != nil)) {
-            Button("重试") { if let s = executingStage { Task { await runStage(s) } } }
-            Button("取消", role: .cancel) { errorMessage = nil }
-        } message: { Text(errorMessage ?? "") }
-        .task { if let p = project { await appState.refreshProject(p.id) } }
     }
     
-    private func runStage(_ key: String) async {
-        guard let id = project?.id else { return }
+    private func doRunStage(_ key: String) async {
+        guard let p = project else { return }
         executingStage = key; errorMessage = nil
         defer { executingStage = nil }
         do {
-            _ = try await APIClient.shared.executeStage(projectId: id, stageName: key)
-            await appState.refreshProject(id)
+            _ = try await APIClient.shared.executeStage(projectId: p.id, stageName: key)
+            await appState.refreshProject(p.id)
         } catch { errorMessage = error.localizedDescription }
     }
 }
 
-// MARK: - 拆分后的子视图（防编译器超时）
+// MARK: - Detail Content
 
 struct DetailContent: View {
     let project: Project
     let stages: [(String, String, String)]
-    @Binding var executingStage: String?
-    @Binding var errorMessage: String?
+    @State private var executingStage: String?
+    @State private var errorMessage: String?
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         ScrollView {
@@ -59,24 +68,33 @@ struct DetailContent: View {
                 OverviewCard(project: project)
                 Divider().background(Color.aiBorder).padding(.horizontal)
                 ProjectInfoSection(project: project)
-                StageListSection(stages: stages, executingStage: $executingStage, runStage: runStage)
+                StageListSection(stages: stages, executingStage: $executingStage)
+                    .onChange(of: executingStage) { _, new in
+                        if let s = new, let p = project {
+                            Task { runStage(s, projectId: p.id) }
+                        }
+                    }
                 AssetsSection(project: project)
                 Spacer(minLength: 32)
             }
             .background(Color.aiBg)
         }
+        .alert("执行失败", isPresented: .constant(errorMessage != nil)) {
+            Button("重试") { if let s = executingStage { Task { await runStage(s, projectId: project.id) } } }
+            Button("取消", role: .cancel) { errorMessage = nil }
+        } message: { Text(errorMessage ?? "") }
     }
     
-    private func runStage(_ key: String) async {
-        guard let p = project else { return }
-        let id = p.id
+    private func runStage(_ key: String, projectId: UUID) async {
         executingStage = key; errorMessage = nil
         defer { executingStage = nil }
         do {
-            _ = try await APIClient.shared.executeStage(projectId: id, stageName: key)
+            _ = try await APIClient.shared.executeStage(projectId: projectId, stageName: key)
         } catch { errorMessage = error.localizedDescription }
     }
 }
+
+// MARK: - Sub-sections
 
 struct ProjectInfoSection: View {
     let project: Project
@@ -106,7 +124,6 @@ struct ProjectInfoSection: View {
 struct StageListSection: View {
     let stages: [(String, String, String)]
     @Binding var executingStage: String?
-    let runStage: (String) async -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -114,12 +131,8 @@ struct StageListSection: View {
             VStack(spacing: 0) {
                 ForEach(Array(stages.enumerated()), id: \.element.0) { i, item in
                     let (key, name, icon) = item
-                    StageRow(stageKey: key, stageName: name, icon: icon, executing: executingStage == key) {
-                        await runStage(key)
-                    }
-                    if i < stages.count - 1 {
-                        Divider().background(Color.aiBorder)
-                    }
+                    StageRow(stageKey: key, stageName: name, icon: icon, executing: executingStage == key)
+                    if i < stages.count - 1 { Divider().background(Color.aiBorder) }
                 }
             }
             .background(Color.aiSurface)
@@ -141,7 +154,8 @@ struct OverviewCard: View {
                     Text(project.statusDisplay).font(.caption).foregroundStyle(projectStatusColor)
                 }
                 Spacer()
-                Text("\(project.progressPercentage)%").font(.title3).fontWeight(.bold).foregroundStyle(Color.aiPrimary)
+                Text("\(project.progressPercentage)%")
+                    .font(.title3).fontWeight(.bold).foregroundStyle(Color.aiPrimary)
             }
             GeometryReader { g in
                 ZStack(alignment: .leading) {
@@ -176,20 +190,16 @@ struct StageRow: View {
     let stageName: String
     let icon: String
     let executing: Bool
-    let onExecute: () async -> Void
     
     var body: some View {
-        Button { Task { await onExecute() } } label: {
-            HStack(spacing: 12) {
-                Image(systemName: icon).font(.title3).foregroundStyle(stageIconColor).frame(width: 28)
-                Text(stageName).font(.body).foregroundStyle(.primary)
-                Spacer()
-                if executing { ProgressView().scaleEffect(0.8) }
-                else { Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary) }
-            }
-            .padding(.vertical, 12)
+        HStack(spacing: 12) {
+            Image(systemName: icon).font(.title3).foregroundStyle(stageIconColor).frame(width: 28)
+            Text(stageName).font(.body).foregroundStyle(.primary)
+            Spacer()
+            if executing { ProgressView().scaleEffect(0.8) }
+            else { Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary) }
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(.vertical, 12)
     }
     private var stageIconColor: Color {
         switch stageKey {
