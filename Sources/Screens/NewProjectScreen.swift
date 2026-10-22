@@ -84,7 +84,7 @@ struct NewProjectScreen: View {
                         Task { await createProject() }
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || isCreating)
-                    .foregroundStyle(isCreating ? .tertiary : Color.aiPrimary)
+                    .foregroundStyle(isCreating ? .secondary : Color.aiPrimary)
                 }
             }
             .overlay {
