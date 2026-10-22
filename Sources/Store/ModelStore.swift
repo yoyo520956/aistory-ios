@@ -1,11 +1,11 @@
 import Foundation
 import SwiftUI
 
-@Observable
-class ModelStore {
-    var providers: [ModelProvider] = []
-    var isLoading = false
-    var lastError: String?
+ObservedObject
+class ModelStore: ObservableObject {
+    @Published var providers: [ModelProvider] = []
+    @Published var isLoading = false
+    @Published var lastError: String?
     
     // MARK: - Load
     

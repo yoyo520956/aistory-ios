@@ -1,13 +1,13 @@
 import Foundation
 import SwiftUI
 
-@Observable
-class AuthStore {
-    var config = ServerConfig()
-    var currentUser: UserInfo?
-    var isAuthenticated = false
-    var isLoading = false
-    var lastError: String?
+ObservedObject
+class AuthStore: ObservableObject {
+    @Published var config = ServerConfig()
+    @Published var currentUser: UserInfo?
+    @Published var isAuthenticated = false
+    @Published var isLoading = false
+    @Published var lastError: String?
     
     private let configKey = "ai_story_server_config"
     private let encoder = JSONEncoder()

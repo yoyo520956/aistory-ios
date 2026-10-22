@@ -1,13 +1,13 @@
 import Foundation
 import SwiftUI
 
-@Observable
-class ProjectStore {
-    var projects: [Project] = []
-    var series: [Series] = []
-    var selectedProject: Project?
-    var isLoading = false
-    var lastError: String?
+ObservedObject
+class ProjectStore: ObservableObject {
+    @Published var projects: [Project] = []
+    @Published var series: [Series] = []
+    @Published var selectedProject: Project?
+    @Published var isLoading = false
+    @Published var lastError: String?
     
     // MARK: - Load
     
