@@ -10,6 +10,8 @@ extension Color {
     static let aiBg         = Color(red: 0.06, green: 0.06, blue: 0.06)  // #0F0F0F
     static let aiSurface    = Color(red: 0.1, green: 0.1, blue: 0.1)     // #1A1A1A
     static let aiBorder     = Color(red: 0.16, green: 0.16, blue: 0.16)  // #2A2A2A
+    static let aiText1      = Color.white                                    // #FFFFFF
+    static let aiText2      = Color(red: 0.67, green: 0.67, blue: 0.67)   // #AAAAAA
 }
 
 extension EdgeInsets {
