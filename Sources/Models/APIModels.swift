@@ -59,7 +59,7 @@ struct StoryboardItem: Codable, Identifiable, Equatable, Hashable {
     let durationSeconds: Int
     
     enum CodingKeys: String, CodingKey {
-        case sequenceNumber = "sequence_number"
+        case id, sequenceNumber = "sequence_number"
         case sceneDescription
         case narrationText
         case imagePrompt
@@ -75,7 +75,7 @@ struct GeneratedImage: Codable, Identifiable, Equatable, Hashable {
     let height: Int
     
     enum CodingKeys: String, CodingKey {
-        case imageUrl, thumbnailUrl, width, height
+        case id, imageUrl, thumbnailUrl, width, height
     }
 }
 
@@ -88,7 +88,7 @@ struct GeneratedVideo: Codable, Identifiable, Equatable, Hashable {
     let height: Int
     
     enum CodingKeys: String, CodingKey {
-        case videoUrl, thumbnailUrl, duration, width, height
+        case id, videoUrl, thumbnailUrl, duration, width, height
     }
 }
 

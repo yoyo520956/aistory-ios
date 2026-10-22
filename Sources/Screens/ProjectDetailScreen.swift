@@ -223,10 +223,9 @@ struct AssetsSection: View {
         }
         .padding(.horizontal)
         .task {
-            loading = true; defer { loading = false }
-            if let id = project.id {
-                images = (try? await APIClient.shared.fetchImages(projectId: id)) ?? []
-            }
+            loading = true
+            defer { loading = false }
+            images = (try? await APIClient.shared.fetchImages(projectId: project.id)) ?? []
         }
     }
 }
