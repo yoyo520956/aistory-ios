@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
+import Combine
 
-ObservedObject
 class ModelStore: ObservableObject {
     @Published var providers: [ModelProvider] = []
     @Published var isLoading = false

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
+import Combine
 
-ObservedObject
 class AuthStore: ObservableObject {
     @Published var config = ServerConfig()
     @Published var currentUser: UserInfo?

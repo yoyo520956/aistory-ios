@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
+import Combine
 
-ObservedObject
 class ProjectStore: ObservableObject {
     @Published var projects: [Project] = []
     @Published var series: [Series] = []
