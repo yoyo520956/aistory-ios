@@ -19,7 +19,7 @@ struct ProjectDetailScreen: View {
     var body: some View {
         Group {
             if let project {
-                DetailContent(project: project, stages: stages, executing: $executingStage, error: $errorMessage)
+                DetailContent(project: project, stages: stages, executingStage: $executingStage, errorMessage: $errorMessage)
             } else {
                 EmptyState(icon: "exclamationmark.triangle", title: "项目不存在", subtitle: "")
             }
@@ -31,7 +31,7 @@ struct ProjectDetailScreen: View {
             Button("重试") { if let s = executingStage { Task { await runStage(s) } } }
             Button("取消", role: .cancel) { errorMessage = nil }
         } message: { Text(errorMessage ?? "") }
-        .task(id: project?.id) { if let id = project?.id { await appState.refreshProject(id) } }
+        .task { if let p = project { await appState.refreshProject(p.id) } }
     }
     
     private func runStage(_ key: String) async {
