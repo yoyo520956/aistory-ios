@@ -122,7 +122,7 @@ class APIClient {
     }
 
     /// 列表请求：同时兼容「分页对象 {results:[...]}」和「纯数组 [...]」
-    private func list<T: Codable>(_ path: String) async throws -> [T] {
+    func list<T: Codable>(_ path: String) async throws -> [T] {
         let data = try await rawRequest(path)
         let decoder = JSONDecoder()
         if let arr = try? decoder.decode([T].self, from: data) { return arr }
@@ -134,15 +134,15 @@ class APIClient {
         }
     }
 
-    private func post<T: Codable, B: Encodable>(_ path: String, body: B) async throws -> T {
+    func post<T: Codable, B: Encodable>(_ path: String, body: B) async throws -> T {
         try await request(path, method: "POST", body: body)
     }
 
-    private func put<T: Codable, B: Encodable>(_ path: String, body: B) async throws -> T {
+    func put<T: Codable, B: Encodable>(_ path: String, body: B) async throws -> T {
         try await request(path, method: "PUT", body: body)
     }
 
-    private func patch<T: Codable, B: Encodable>(_ path: String, body: B) async throws -> T {
+    func patch<T: Codable, B: Encodable>(_ path: String, body: B) async throws -> T {
         try await request(path, method: "PATCH", body: body)
     }
 
