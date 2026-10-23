@@ -189,7 +189,7 @@ struct CreateEpisodeView: View {
     
     private func handleCreate() async {
         do {
-            let p = try await projectStore.createProject(
+            _ = try await projectStore.createProject(
                 name: name,
                 topic: topic,
                 seriesId: seriesId,
