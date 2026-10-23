@@ -2,96 +2,116 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var authStore: AuthStore
+    @EnvironmentObject var modelStore: ModelStore
     @State private var baseUrl = ""
-    @State private var showTestResult = false
-    @State private var testResult = ""
-    
+    @State private var username = ""
+    @State private var password = ""
+    @State private var testResult: String?
+    @State private var testing = false
+
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("服务器配置") {
-                    TextField("服务器地址", text: $baseUrl)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                    
-                    Button {
-                        Task { await testConnection() }
-                    } label: {
-                        HStack {
-                            Image(systemName: "network")
-                            Text("测试连接")
-                        }
-                    }
-                    
-                    if showTestResult {
-                        Text(testResult)
-                            .font(.caption)
-                            .foregroundStyle(testResult.contains("成功") ? Color.aiSuccess : Color.aiError)
+        Form {
+            Section("服务器") {
+                TextField("服务器地址", text: $baseUrl)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .keyboardType(.URL)
+
+                Button {
+                    Task { await testConnection() }
+                } label: {
+                    HStack {
+                        Image(systemName: "network")
+                        Text(testing ? "测试中…" : "保存并测试连接")
                     }
                 }
-                
-                Section("账号信息") {
-                    HStack {
-                        Text("用户名")
-                        Spacer()
-                        Text(authStore.currentUser?.username ?? "-")
-                            .foregroundStyle(Color.aiText2)
-                    }
-                    
-                    HStack {
-                        Text("邮箱")
-                        Spacer()
-                        Text(authStore.currentUser?.email ?? "未设置")
-                            .foregroundStyle(Color.aiText2)
-                    }
-                }
-                
-                Section("数据管理") {
-                    Button("清除缓存") {
-                        // 清除本地数据
-                    }
-                }
-                
-                Section("关于") {
-                    HStack {
-                        Text("版本")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundStyle(Color.aiText2)
-                    }
-                    
-                    HStack {
-                        Text("开发者")
-                        Spacer()
-                        Text("倾瑶工作室")
-                            .foregroundStyle(Color.aiText2)
-                    }
+                .disabled(testing || baseUrl.isEmpty)
+
+                if let r = testResult {
+                    Text(r)
+                        .font(.caption)
+                        .foregroundStyle(r.hasPrefix("✓") ? Color.aiSuccess : Color.aiError)
                 }
             }
-            .navigationTitle("设置")
-            .onChange(of: baseUrl) { newValue in
-                authStore.config.baseUrl = newValue
-                authStore.saveConfig()
+
+            Section("认证") {
+                TextField("用户名", text: $username)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                SecureField("密码", text: $password)
+                Button {
+                    Task { await reLogin() }
+                } label: {
+                    Label("重新登录获取 Token", systemImage: "key")
+                }
+                .disabled(username.isEmpty || password.isEmpty)
             }
-            .onAppear {
-                baseUrl = authStore.config.baseUrl
+
+            Section("创作配置") {
+                NavigationLink {
+                    ModelListView()
+                } label: {
+                    Label("模型配置（LLM / 文生图 / 图生视频 / 图片编辑）", systemImage: "cpu")
+                }
+
+                NavigationLink {
+                    PromptListView()
+                } label: {
+                    Label("提示词管理", systemImage: "text.badge.star")
+                }
+            }
+
+            Section("账号") {
+                LabeledRow(label: "用户名", value: authStore.currentUser?.username ?? username.isEmpty ? "-" : username)
+                LabeledRow(label: "邮箱", value: authStore.currentUser?.email ?? "未设置")
+                LabeledRow(label: "Token", value: authStore.config.accessToken.isEmpty ? "未登录" : "已获取")
+            }
+
+            Section("关于") {
+                LabeledRow(label: "应用", value: "AI Story")
+                LabeledRow(label: "版本", value: "1.0.0 (20261023.02)")
+                LabeledRow(label: "后端", value: "ai_story (Django)")
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    authStore.logout()
+                } label: {
+                    Label("退出登录", systemImage: "rectangle.portrait.and.arrow.right")
+                }
             }
         }
+        .navigationTitle("设置")
+        .task {
+            baseUrl = authStore.config.baseUrl
+            username = authStore.config.username
+        }
     }
-    
+
     private func testConnection() async {
-        testResult = "测试中..."
-        showTestResult = true
-        
+        testing = true
+        testResult = nil
+        defer { testing = false }
         do {
-            let success = try await authStore.testConnection(baseUrl: baseUrl)
-            if success {
-                testResult = "✓ 连接成功"
-            } else {
-                testResult = "✗ 连接失败"
-            }
+            _ = try await authStore.testConnection(baseUrl: baseUrl)
+            testResult = "✓ 连接成功"
         } catch {
-            testResult = "✗ 连接失败：\(error.localizedDescription)"
+            testResult = "✗ \(error.localizedDescription)"
+        }
+    }
+
+    private func reLogin() async {
+        testing = true
+        testResult = nil
+        defer { testing = false }
+        do {
+            authStore.config.username = username
+            authStore.config.password = password
+            authStore.saveConfig()
+            try await authStore.login(username: username, password: password)
+            testResult = "✓ 登录成功"
+        } catch {
+            testResult = "✗ \(error.localizedDescription)"
         }
     }
 }
