@@ -7,15 +7,13 @@ struct AgentInitResult: Codable {
 
     enum CodingKeys: String, CodingKey {
         case scopeKey = "scope_key"
-        case scope_key
     }
 }
 
 extension AgentInitResult {
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        scopeKey = (try? c.decode(String.self, forKey: .scopeKey))
-            ?? (try? c.decode(String.self, forKey: CodingKeys.scope_key)) ?? ""
+        scopeKey = (try? c.decode(String.self, forKey: .scopeKey)) ?? ""
     }
 }
 

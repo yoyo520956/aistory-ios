@@ -45,8 +45,8 @@ enum APIError: LocalizedError {
 class APIClient {
     static let shared = APIClient()
 
-    private var config: ServerConfig
-    private let session: URLSession
+    var config: ServerConfig
+    let session: URLSession
 
     private init(config: ServerConfig = ServerConfig()) {
         self.config = config
@@ -64,7 +64,7 @@ class APIClient {
         return b.hasSuffix("/") ? String(b.dropLast()) : b
     }
 
-    private func authHeaders(json: Bool = true) -> [String: String] {
+    func authHeaders(json: Bool = true) -> [String: String] {
         var h: [String: String] = ["Accept": "application/json"]
         if json { h["Content-Type"] = "application/json" }
         if !config.accessToken.isEmpty {
@@ -76,7 +76,7 @@ class APIClient {
         return h
     }
 
-    private func makeURL(_ path: String) throws -> URL {
+    func makeURL(_ path: String) throws -> URL {
         guard let base = baseString else { throw APIError.invalidURL }
         let clean = path.hasPrefix("/") ? String(path.dropFirst()) : path
         guard let url = URL(string: base + "/" + clean) else { throw APIError.invalidURL }
