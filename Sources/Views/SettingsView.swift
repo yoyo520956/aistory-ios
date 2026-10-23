@@ -65,6 +65,12 @@ struct SettingsView: View {
                 } label: {
                     Label("节点结构定义", systemImage: "square.stack.3d.up")
                 }
+
+                NavigationLink {
+                    AgentChatView()
+                } label: {
+                    Label("AI 助手", systemImage: "bubble.left.and.bubble.right")
+                }
             }
 
             Section("账号") {
@@ -75,7 +81,7 @@ struct SettingsView: View {
 
             Section("关于") {
                 LabeledRow(label: "应用", value: "AI Story")
-                LabeledRow(label: "版本", value: "1.1.0 (20261023.03)")
+                LabeledRow(label: "版本", value: "1.2.0 (20261023.04)")
                 LabeledRow(label: "后端", value: "ai_story (Django)")
             }
 

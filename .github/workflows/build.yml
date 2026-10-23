@@ -93,11 +93,11 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.1.0
+          tag_name: v1.2.0
           files: AIStory-unsigned.ipa
-          name: "AI Story v1.1.0"
+          name: "AI Story v1.2.0"
           body: |
-            ## AI Story iOS v1.1.0
+            ## AI Story iOS v1.2.0
 
             AI 漫剧生成系统 —— 连接 [ai_story](https://github.com/xhongc/ai_story) 后端的 iOS 原生客户端。
 
