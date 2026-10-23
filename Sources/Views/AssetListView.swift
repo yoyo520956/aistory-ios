@@ -153,7 +153,6 @@ struct AssetFormView: View {
     @State private var errorMessage: String?
 
     private let groups = ["角色", "场景", "道具", "风格", "其他"]
-    private let types = [("text", "文本"), ("image", "图片"), ("json", "JSON")]
 
     var body: some View {
         NavigationStack {
@@ -164,7 +163,9 @@ struct AssetFormView: View {
                         ForEach(groups, id: \.self) { Text($0).tag($0) }
                     }
                     Picker("类型", selection: $variableType) {
-                        ForEach(types, id: \.self) { Text($0.1).tag($0.0) }
+                        Text("文本").tag("text")
+                        Text("图片").tag("image")
+                        Text("JSON").tag("json")
                     }
                 }
 

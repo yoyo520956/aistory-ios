@@ -62,7 +62,7 @@ struct SettingsView: View {
             }
 
             Section("账号") {
-                LabeledRow(label: "用户名", value: authStore.currentUser?.username ?? username.isEmpty ? "-" : username)
+                LabeledRow(label: "用户名", value: authStore.currentUser?.username ?? (username.isEmpty ? "-" : username))
                 LabeledRow(label: "邮箱", value: authStore.currentUser?.email ?? "未设置")
                 LabeledRow(label: "Token", value: authStore.config.accessToken.isEmpty ? "未登录" : "已获取")
             }
