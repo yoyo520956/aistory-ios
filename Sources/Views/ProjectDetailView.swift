@@ -47,6 +47,8 @@ struct ProjectDetailView: View {
 
                 StageOutputSection(stages: stages, project: project)
 
+                JianyingDraftCard(project: project)
+
                 Spacer(minLength: 24)
             }
             .padding()

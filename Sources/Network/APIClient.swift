@@ -422,6 +422,18 @@ extension APIClient {
     }
 }
 
+// MARK: - Workflow Node Schemas
+
+extension APIClient {
+    func fetchNodeSchemas() async throws -> [JSONValue] {
+        let data = try await rawRequest("api/v1/workflows/node-schemas/")
+        let decoder = JSONDecoder()
+        if let arr = try? decoder.decode([JSONValue].self, from: data) { return arr }
+        if let page = try? decoder.decode(PaginatedResponse<JSONValue>.self, from: data) { return page.results }
+        return []
+    }
+}
+
 // MARK: - Content / Storage
 
 extension APIClient {

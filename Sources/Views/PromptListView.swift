@@ -293,6 +293,15 @@ struct PromptTemplateEditorView: View {
         .navigationTitle("编辑模板")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if let t = template {
+                    NavigationLink {
+                        PromptDebugView(template: t)
+                    } label: {
+                        Label("调试", systemImage: "antenna.radiowaves.left.and.right")
+                    }
+                }
+            }
             ToolbarItem(placement: .confirmationAction) {
                 Button(isSaving ? "保存中…" : "保存") {
                     Task { await save() }

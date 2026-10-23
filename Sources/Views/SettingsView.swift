@@ -59,6 +59,12 @@ struct SettingsView: View {
                 } label: {
                     Label("提示词管理", systemImage: "text.badge.star")
                 }
+
+                NavigationLink {
+                    NodeSchemaListView()
+                } label: {
+                    Label("节点结构定义", systemImage: "square.stack.3d.up")
+                }
             }
 
             Section("账号") {
@@ -69,7 +75,7 @@ struct SettingsView: View {
 
             Section("关于") {
                 LabeledRow(label: "应用", value: "AI Story")
-                LabeledRow(label: "版本", value: "1.0.0 (20261023.02)")
+                LabeledRow(label: "版本", value: "1.1.0 (20261023.03)")
                 LabeledRow(label: "后端", value: "ai_story (Django)")
             }
 
